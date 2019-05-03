@@ -36,6 +36,10 @@
 			<Add library="imagehlp" />
 			<Add library="gdi32" />
 		</Linker>
+		<Unit filename="src/coff-view.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="src/main.cc" />
 		<Unit filename="src/object.cc" />
 		<Unit filename="src/object.h" />
@@ -43,6 +47,7 @@
 		<Unit filename="src/resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="src/section.cc" />
 		<Extensions>
 			<code_completion />
 			<envvars />

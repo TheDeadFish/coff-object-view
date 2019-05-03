@@ -1,7 +1,4 @@
-#include <stdshit.h>
-#include <win32hlp.h>
-#include "resource.h"
-#include "object.h"
+#include "coff-view.h"
 
 const char progName[] = "Object viewer";
 
@@ -21,10 +18,14 @@ void lstView_autoSize(HWND hList, int iCol)
 
 
 
+
+
 CoffObjLd object;
 HWND hListSym;
 HWND hListSect;
 HWND hListRel;
+int viewSel;
+
 
 void lstView_initCol(HWND hList, cch* const lst[]) {
 	for(int i = 0; lst[i]; i++) {
@@ -33,7 +34,7 @@ cch* const symLst[] = {"Name", "Sect", "Class", "Value", "Type","Aux", 0 };
 cch* const sectLst[] = { "Name", "Size","Base","Flags", 0};
 cch* const relLst[] = { "Symbol", "Offset", "Type", 0 };
 
-void lstView_setHex(HWND hListSym, int item, int subItem, DWORD value, int len=8)
+void lstView_setHex(HWND hListSym, int item, int subItem, DWORD value, int len)
 {	char buff[32]; sprintf(buff, "%0*X", len, value);
 	lstView_iosText(hListSym, item, subItem, buff); }
 	
@@ -118,17 +119,9 @@ int load_object(HWND hwnd, cch* name)
 	
 	init_symbols(hwnd);
 	
-	// initialize sections
-	OBJ_SECT_ITER(object, 
-		dlgCombo_addStr(hwnd, IDC_COMBO2, 
-			Xstrfmt("%d,   %s", iSect+1, sect.name()), iSect);
-		lstView_iosText(hListSect, iSect, sect.name());
-		lstView_setHex(hListSect, iSect, 1, sect.SizeOfRawData);
-		lstView_setHex(hListSect, iSect, 2, sect.VirtualAddress);
-		lstView_setHex(hListSect, iSect, 3, sect.Characteristics);
-	);
+	init_sections(hwnd);
 	
-	lstView_autoSize(hListSect, 0);
+
 	
 	
 	dlgCombo_setSel(hwnd, IDC_COMBO2, 0);
@@ -140,10 +133,11 @@ int load_object(HWND hwnd, cch* name)
 void selectTab(HWND hwnd)
 {
 	// select the window to show
-	int viewSel = getDlgTabPage(hwnd, IDC_TAB1);
+	viewSel = getDlgTabPage(hwnd, IDC_TAB1);
 	showWindow(hListSym, viewSel == 0);
 	showWindow(hListSect, viewSel == 1);
 	showWindow(hListRel, viewSel == 2);
+	section_select(hwnd);
 }
 
 void mainDlgInit(HWND hwnd)
@@ -212,6 +206,7 @@ void upd_relocs(HWND hwnd)
 	init_relocs(hwnd);
 	if(IsDlgButtonChecked(hwnd, IDC_SECT_SYM))
 		init_symbols(hwnd);
+	section_select(hwnd);
 }
 
 BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
