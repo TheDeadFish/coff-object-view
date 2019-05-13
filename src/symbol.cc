@@ -40,17 +40,15 @@ void symbol_select(HWND hwnd)
 	if(sel < 0) return;
 	auto& symb = object.symbols[sel];
 	
+	// determine format
+	int type = symb.aux_type();
+	if(type < 0) return;
+	
+	Bstr str;
+	
+	// 
+	str.fmtcat("Aux Type: %s\r\n", object.aux_name(type));
 	
 	
-	
-	
-
-
-
-
-	
-
-
-
-
+	SetDlgItemTextA(hwnd, IDC_INFO, str.data);
 }

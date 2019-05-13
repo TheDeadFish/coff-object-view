@@ -44,6 +44,9 @@ struct CoffObjLd
 		WORD Type;
 		BYTE StorageClass;
 		BYTE NumberOfAuxSymbols;
+		
+		int aux_type();
+		
 	} __attribute__((packed));
 	
 	struct Section : IMAGE_SECTION_HEADER
@@ -99,9 +102,5 @@ struct CoffObjLd
 	// helper functions
 	cch* class_name(int);
 	cch* sect_name(DWORD);
-	
-	
-	
-	
-	
+	cch* aux_name(int);
 };

@@ -131,3 +131,39 @@ cch* CoffObjLd::sect_name(DWORD iSect)
 	if(iSect > sections.size) return "";
 	return sections[iSect-1].name();
 }
+
+int CoffObjLd::ObjSymbol::aux_type(void)
+{
+	if(!NumberOfAuxSymbols) return 0;
+	
+	// Function Definitions
+	if((StorageClass == 2)
+	&&(Type == 20)&&(Section))
+		return 1;
+		
+	// Weak Externals
+	if((StorageClass == 2)
+	&&(!Section)&&(!Value))
+		return 3;
+		
+	// Files
+	if(StorageClass == 103)
+		return 4;
+		
+	// Section Definitions
+	if(StorageClass == 3)
+		return 5;
+		
+	return -1;
+}
+
+cch* CoffObjLd::aux_name(int i)
+{
+	switch(i) {
+	case 1: return "Function Def";
+	case 3: return "Weak symbol";
+	case 4: return "Object file";
+	case 5: return "Section Def";
+	default: "unknown";
+	}
+}
