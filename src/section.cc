@@ -45,8 +45,6 @@ void section_select(HWND hwnd)
 	u32 flags = sect.Characteristics;
 	str.strcat("Characteristics = ");
 	for(int i = 0; i < 32; i++) {
-		printf("%d, %s\n", _BTST(flags, i), sectFlags[i]);
-	
 		if(_BTST(flags, i) && sectFlags[i]) {
 			if(i) str.strcat("|"); 
 			str.strcat(sectFlags[i]); }

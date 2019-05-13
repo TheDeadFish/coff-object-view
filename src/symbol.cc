@@ -66,9 +66,8 @@ void symbol_select(HWND hwnd)
 		
 	case 4: {
 		cch* name = (cch*)(&symb+1);
-		int len = strnlen(name, sizeof(symb) 
-			* symb.NumberOfAuxSymbols);
-		str.fmtcat("  Name: %v\r\n", name, len);
+		int len = symb.NumberOfAuxSymbols * sizeof(symb);
+		str.fmtcat("  Name: %.*s\r\n", len, name);
 		break; }
 		
 	case 5: {

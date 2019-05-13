@@ -136,34 +136,6 @@ void mainDlgInit(HWND hwnd)
 	lstView_initCol(hListSym, symLst);
 	lstView_initCol(hListSect, sectLst);
 	lstView_initCol(hListRel, relLst);
-
-	/*OBJ_SYM_ITER(object, 
-		int i = lstView_iosText(hListSym, -1, sym.name);
-		
-		lstView_setHex(hListSym, i, 1, sym.Value);
-		
-		
-		lstView_fmt(hListSym, i, 2, "%d: %s", sym.Section,
-			object.sect_name(sym.Section));
-		
-		
-		lstView_setHex(hListSym, i, 3, sym.Type);
-		
-
-		
-		//lstView_setText(hListSym, i, 4, sym.StorageClass);
-		
-		
-	
-	
-	)*/
-		
-		
-		
-		
-
-
-
 }
 
 void load_module(HWND hwnd)
@@ -172,7 +144,8 @@ void load_module(HWND hwnd)
 	OpenFileName ofn;
 	if(!ofn.doModal(hwnd)) return;
 	if(load_object(hwnd, ofn.lpstrFile)) contError(
-		hwnd, "failed to load module"); return;
+		hwnd, "failed to load module");
+	selectTab(hwnd);
 }
 
 void upd_relocs(HWND hwnd)
