@@ -32,7 +32,7 @@ void lstView_initCol(HWND hList, cch* const lst[]) {
 		lstView_insColumn(hList, i, 78, lst[i]); } }
 cch* const symLst[] = {"Name", "Sect", "Class", "Value", "Type","Aux", 0 };
 cch* const sectLst[] = { "Name", "Size","Base","Flags", 0};
-cch* const relLst[] = { "Symbol", "Offset", "Type", 0 };
+cch* const relLst[] = { "Symbol", "Offset", "Type", "Value", 0 };
 
 void lstView_setHex(HWND hListSym, int item, int subItem, DWORD value, int len)
 {	char buff[32]; sprintf(buff, "%0*X", len, value);
@@ -64,11 +64,17 @@ void init_relocs(HWND hwnd)
 	
 	int curSect = dlgCombo_getSel(hwnd, IDC_COMBO2);
 	
+	auto& sect = object.sections[curSect];
+	
 	for(auto& reloc : object.relocs(curSect)) {
 		cch* name = object.symbols[reloc.symbol].name;
 		int i = lstView_iosText(hListRel, -1, name);
+		int data = sect.get32(object, reloc.offset);
+		
 		lstView_setHex(hListRel, i, 1, reloc.offset);
 		lstView_setHex(hListRel, i, 2, reloc.type, 2);
+		lstView_setHex(hListRel, i, 3, data, 8);
+		
 	}
 	
 	lstView_autoSize(hListRel, 0);
@@ -209,6 +215,15 @@ void upd_relocs(HWND hwnd)
 	section_select(hwnd);
 }
 
+void combo_userSel(HWND hwnd, int ctrlId, int sel)
+{
+	if(dlgCombo_getSel(hwnd, IDC_COMBO2) == sel) return;
+	dlgCombo_setSel(hwnd, IDC_COMBO2, sel);
+	HWND hcb = GetDlgItem(hwnd, ctrlId);
+	sendMessage(GetParent(hcb), WM_COMMAND, 
+		MAKEWPARAM(ctrlId, CBN_SELCHANGE), (LPARAM)hcb);
+}
+
 BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	DLGMSG_SWITCH(
@@ -218,17 +233,20 @@ BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ON_COMMAND(IDC_SECT_SYM, init_symbols(hwnd))
 			
 			ON_CONTROL(CBN_SELCHANGE, IDC_COMBO2, upd_relocs(hwnd))
-
+			
 			//ON_CONTROL_RANGE(EN_CHANGE, IDC_MOD_BASE, IDC_RVA_ADDR,
 			//	edt_update(hwnd, LOWORD(wParam)))
 			//ON_CONTROL_RANGE(EN_KILLFOCUS, IDC_MOD_BASE, IDC_RVA_ADDR,
 			//	edt_validate(hwnd, LOWORD(wParam)))
 	  	  
 	  ,) 
+
 		ON_MESSAGE(WM_INITDIALOG, mainDlgInit(hwnd))
 		
 		CASE_NOTIFY(
 			ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, selectTab(hwnd))
+			ON_LVN_NOTIFY(LVN_ITEMCHANGED, IDC_LIST2,
+				combo_userSel(hwnd, IDC_COMBO2, nmv.iItem))		
 	  ,)
 	,)
 }

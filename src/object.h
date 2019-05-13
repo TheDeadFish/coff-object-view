@@ -18,6 +18,9 @@ struct CoffStrTab
 	xArray<xstr> lst;
 };
 
+TMPL2(T,U) T safe_deref(T* p, U def) {
+	return p ? *p : (T)def; }
+
 struct CoffObjLd
 {
 	int load(const char* name);
@@ -48,6 +51,10 @@ struct CoffObjLd
 		char*& name() { return *(char**)Name; }
 		xarray<byte> data(CoffObjLd& This) { 
 			return {This.get(PointerToRawData), SizeOfRawData}; }
+		DWORD get32(CoffObjLd& This, DWORD offset) { 	
+			return  PointerToRawData ? safe_deref(
+				data(This).getp<int>(offset), -1) : 0; }
+
 		xarray<ObjRelocs> relocs(CoffObjLd& This) {
 			return {This.get(PointerToRelocations), NumberOfRelocations}; }
 	};
