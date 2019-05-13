@@ -217,8 +217,8 @@ void upd_relocs(HWND hwnd)
 
 void combo_userSel(HWND hwnd, int ctrlId, int sel)
 {
-	if(dlgCombo_getSel(hwnd, IDC_COMBO2) == sel) return;
-	dlgCombo_setSel(hwnd, IDC_COMBO2, sel);
+	if(dlgCombo_getSel(hwnd, ctrlId) == sel) return;
+	dlgCombo_setSel(hwnd, ctrlId, sel);
 	HWND hcb = GetDlgItem(hwnd, ctrlId);
 	sendMessage(GetParent(hcb), WM_COMMAND, 
 		MAKEWPARAM(ctrlId, CBN_SELCHANGE), (LPARAM)hcb);
@@ -245,8 +245,10 @@ BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		
 		CASE_NOTIFY(
 			ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, selectTab(hwnd))
+			ON_LVN_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1,
+				combo_userSel(hwnd, IDC_COMBO1, nmv.iItem))
 			ON_LVN_NOTIFY(LVN_ITEMCHANGED, IDC_LIST2,
-				combo_userSel(hwnd, IDC_COMBO2, nmv.iItem))		
+				combo_userSel(hwnd, IDC_COMBO2, nmv.iItem))
 	  ,)
 	,)
 }
