@@ -103,4 +103,32 @@ struct CoffObjLd
 	cch* class_name(int);
 	cch* sect_name(DWORD);
 	cch* aux_name(int);
+	
+	
+	// auxillary types
+	struct Aux_FuncDef {
+		DWORD tagIndex;
+		DWORD TotalSize;
+		DWORD PointerToLinenumber;
+		DWORD PointerToNextFunction;
+		WORD Unused;
+	
+	} __attribute__((packed));
+	
+	struct Aux_SectDef {
+		DWORD Length;
+		WORD NumberOfRelocations;
+		WORD NumberOfLinenumbers;
+		DWORD CheckSum;
+		WORD Number;
+		BYTE Selection;
+		BYTE Unused[3];
+	
+	} __attribute__((packed));	
+	
+
+	
+	
+	
+	
 };

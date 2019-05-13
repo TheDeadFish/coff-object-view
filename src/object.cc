@@ -134,11 +134,12 @@ cch* CoffObjLd::sect_name(DWORD iSect)
 
 int CoffObjLd::ObjSymbol::aux_type(void)
 {
-	if(!NumberOfAuxSymbols) return 0;
+	if(!NumberOfAuxSymbols) 
+		return -1;
 	
 	// Function Definitions
 	if((StorageClass == 2)
-	&&(Type == 20)&&(Section))
+	&&(Type == 32)&&(Section))
 		return 1;
 		
 	// Weak Externals
@@ -154,7 +155,7 @@ int CoffObjLd::ObjSymbol::aux_type(void)
 	if(StorageClass == 3)
 		return 5;
 		
-	return -1;
+	return 0;
 }
 
 cch* CoffObjLd::aux_name(int i)
@@ -162,8 +163,8 @@ cch* CoffObjLd::aux_name(int i)
 	switch(i) {
 	case 1: return "Function Def";
 	case 3: return "Weak symbol";
-	case 4: return "Object file";
+	case 4: return "Source file";
 	case 5: return "Section Def";
-	default: "unknown";
+	default: return "unknown";
 	}
 }
