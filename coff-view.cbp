@@ -48,6 +48,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="src/section.cc" />
+		<Unit filename="src/symbol.cc" />
 		<Extensions>
 			<code_completion />
 			<envvars />

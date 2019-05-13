@@ -7,7 +7,8 @@
 void lstView_autoSize(HWND hList, int iCol);
 void lstView_setHex(HWND hListSym, int item, 
 	int subItem, DWORD value, int len=8);
-
+void lstView_fmt(HWND hListSym, int item,
+	 int subItem, cch* fmt, ...);
 
 extern CoffObjLd object;
 extern HWND hListSym;
@@ -19,4 +20,6 @@ extern int viewSel;
 void init_sections(HWND hwnd);
 void section_select(HWND hwnd);
 
-
+// symbol functions
+void init_symbols(HWND hwnd);
+void symbol_select(HWND hwnd);
