@@ -138,14 +138,19 @@ void mainDlgInit(HWND hwnd)
 	lstView_initCol(hListRel, relLst);
 }
 
+void load_module_(HWND hwnd, cch* name)
+{
+	if(load_object(hwnd, name)) contError(
+		hwnd, "failed to load module");
+	selectTab(hwnd);
+}
+
 void load_module(HWND hwnd)
 {
 	// load the module file
 	OpenFileName ofn;
 	if(!ofn.doModal(hwnd)) return;
-	if(load_object(hwnd, ofn.lpstrFile)) contError(
-		hwnd, "failed to load module");
-	selectTab(hwnd);
+	load_module_(hwnd, ofn.lpstrFile);
 }
 
 void upd_relocs(HWND hwnd)
@@ -165,9 +170,16 @@ void combo_userSel(HWND hwnd, int ctrlId, int sel)
 		MAKEWPARAM(ctrlId, CBN_SELCHANGE), (LPARAM)hcb);
 }
 
+void dropFiles(HWND hwnd, LPARAM lParam)
+{
+	xArray<xstr> files = hDropGet((HANDLE)lParam);
+	load_module_(hwnd, files[0]);
+}
+
 BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	DLGMSG_SWITCH(
+		ON_MESSAGE(WM_DROPFILES, dropFiles(hwnd, wParam))
 	  CASE_COMMAND(
 	    ON_COMMAND(IDCANCEL, EndDialog(hwnd, 0))
 			ON_COMMAND(IDC_LOAD, load_module(hwnd))
