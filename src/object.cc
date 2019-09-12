@@ -49,14 +49,29 @@ int CoffObjLd::load(const char* name)
 	if(!rd.load(name)) return ERROR_LOAD;
 	fileData.init(rd);
 		
-	// check header & section table
+	// object file
 	if(rd.check(0, sizeof(IMAGE_FILE_HEADER))) 
 		return ERROR_EOF;
 	IMAGE_FILE_HEADER* objHeadr = rd.get(0);
+	DWORD iSectPos = sizeof(IMAGE_FILE_HEADER);
+	
+	// pe file
+	if(RW(objHeadr) == 'ZM') {
+		IMAGE_DOS_HEADER* idh = rd.get(0);
+		if(rd.check(idh->e_lfanew, sizeof(IMAGE_NT_HEADERS32)))
+			return ERROR_EOF;
+		IMAGE_NT_HEADERS32* peHeadr = rd.get(idh->e_lfanew);
+		objHeadr = &peHeadr->FileHeader;
+		iSectPos = offsetof(IMAGE_NT_HEADERS, OptionalHeader) + 
+			peHeadr->FileHeader.SizeOfOptionalHeader + idh->e_lfanew;
+	}
+
+	// get section table
 	DWORD nSects = objHeadr->NumberOfSections;
-	if(rd.check(sizeof(IMAGE_FILE_HEADER), nSects, 
-		sizeof(IMAGE_SECTION_HEADER))) return ERROR_EOF;
-		
+	if(rd.check(iSectPos, nSects, sizeof(IMAGE_SECTION_HEADER)))
+		return ERROR_EOF;
+	sections.init(rd.get(iSectPos), nSects);
+	
 	// check symbol table & string table
 	DWORD nSymbols = objHeadr->NumberOfSymbols;
 	DWORD iSymbols = objHeadr->PointerToSymbolTable;
@@ -72,7 +87,6 @@ int CoffObjLd::load(const char* name)
 		sym.name = str; )
 	
 	// load sections
-	sections.init(rd.get(sizeof(IMAGE_FILE_HEADER)), nSects);
 	for(auto& sect : sections) {
 	
 		// section name
