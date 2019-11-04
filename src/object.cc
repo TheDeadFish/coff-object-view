@@ -1,5 +1,6 @@
 #include <stdshit.h>
 #include "object.h"
+TMPL(T) void pRst(T* obj) { pDel(obj); pNew(obj); }
 
 template <class T>
 T* ovf_ofsp(T* p, size_t ofs) {
@@ -45,7 +46,7 @@ struct CoffObjRd : xArray<byte>
 int CoffObjLd::load(const char* name)
 {
 	// load the section
-	CoffObjRd rd; 
+	pRst(this); CoffObjRd rd; 
 	if(!rd.load(name)) return ERROR_LOAD;
 	fileData.init(rd);
 		
@@ -75,10 +76,12 @@ int CoffObjLd::load(const char* name)
 	// check symbol table & string table
 	DWORD nSymbols = objHeadr->NumberOfSymbols;
 	DWORD iSymbols = objHeadr->PointerToSymbolTable;
-	symbols.init(rd.get(iSymbols), nSymbols);
-	DWORD iStrTab; if(rd.offset(iStrTab, iSymbols, nSymbols,
-		sizeof(ObjSymbol))) return ERROR_EOF;
-	pStrTab = rd.get(iStrTab);
+	if(iSymbols) {
+		symbols.init(rd.get(iSymbols), nSymbols);
+		DWORD iStrTab; if(rd.offset(iStrTab, iSymbols, nSymbols,
+			sizeof(ObjSymbol))) return ERROR_EOF;
+		pStrTab = rd.get(iStrTab);
+	}
 
 	// validate symbols
 	OBJ_SYM_ITER(*this, 
@@ -90,7 +93,7 @@ int CoffObjLd::load(const char* name)
 	for(auto& sect : sections) {
 	
 		// section name
-		if(sect.Name[0] == '/') { 
+		if(sect.Name[0] == '/' && pStrTab) { 
 			u32 i = atoi(PC(sect.Name+1));
 			RI(sect.Name) = 0; RI(sect.Name,4) = i; }
 		sect.name() = strGet(PU(sect.Name));
