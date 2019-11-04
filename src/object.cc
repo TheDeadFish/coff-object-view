@@ -33,7 +33,7 @@ struct CoffObjRd : xArray<byte>
 	
 	bool offset(DWORD& dst, DWORD ofs, DWORD len1, DWORD len2=1) {
 		return  __builtin_mul_overflow(len1, len2, &len1) ||
-		__builtin_add_overflow(len1, ofs, &dst) || dst >= size; }
+		__builtin_add_overflow(len1, ofs, &dst) || dst >= len; }
 	bool check(DWORD ofs, DWORD len1, DWORD len2=1) {
 		return offset(ofs, ofs, len1, len2); }
 	
@@ -142,7 +142,7 @@ cch* CoffObjLd::sect_name(DWORD iSect)
 	if(iSect == 0) return "UNDEFINED";
 	if(iSect == (DWORD)-1) return "ABSOLUTE";
 	if(iSect == (DWORD)-2) return "DEBUG";
-	if(iSect > sections.size) return "";
+	if(iSect > sections.len) return "";
 	return sections[iSect-1].name();
 }
 

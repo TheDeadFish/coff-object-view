@@ -75,11 +75,11 @@ struct CoffObjLd
 	
 	
 	#define OBJ_SYM_ITER(o, ...) \
-		for(int iSym = 0; iSym < (o).symbols.size; \
+		for(int iSym = 0; iSym < (o).symbols.len; \
 		iSym +=  (o).symbols[iSym].NumberOfAuxSymbols+1) { \
 			auto& sym = (o).symbols[iSym]; __VA_ARGS__; }
 	#define OBJ_SECT_ITER(o, ...) \
-		for(int iSect = 0; iSect < (o).sections.size; iSect++) { \
+		for(int iSect = 0; iSect < (o).sections.len; iSect++) { \
 			auto& sect = (o).sections[iSect]; __VA_ARGS__; }
 	
 	
