@@ -64,7 +64,9 @@ void init_relocs(HWND hwnd)
 	auto& sect = object.sections[curSect];
 	
 	for(auto& reloc : object.relocs(curSect)) {
-		cch* name = object.symbols[reloc.symbol].name;
+		cch* name = "INVALID";
+		if(reloc.symbol < object.symbols.len) {
+			name = object.symbols[reloc.symbol].name; }
 		int i = lstView_iosText(hListRel, -1, name);
 		int data = sect.get32(object, reloc.offset);
 		
