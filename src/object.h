@@ -95,7 +95,7 @@ struct CoffObjLd
 	// string access
 	CoffStrTab strTab;
 	char* pStrTab;
-	char* strGet(DWORD*);
+	char* strGet(void*);
 	
 	
 	

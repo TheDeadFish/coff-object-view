@@ -1,6 +1,6 @@
 #include <stdshit.h>
 #include "object.h"
-TMPL(T) void pRst(T* obj) { pDel(obj); pNew(obj); }
+//TMPL(T) void pRst(T* obj) { pDel(obj); pNew(obj); }
 
 template <class T>
 T* ovf_ofsp(T* p, size_t ofs) {
@@ -96,7 +96,7 @@ int CoffObjLd::load(const char* name)
 		if(sect.Name[0] == '/' && pStrTab) { 
 			u32 i = atoi(PC(sect.Name+1));
 			RI(sect.Name) = 0; RI(sect.Name,4) = i; }
-		sect.name() = strGet(PU(sect.Name));
+		sect.name() = strGet(&sect.Name);
 		if(!sect.name()) return ERROR_EOF;
 		
 	}
@@ -105,10 +105,10 @@ int CoffObjLd::load(const char* name)
 	return ERROR_NONE;
 }	
 	
-char* CoffObjLd::strGet(DWORD* name)
+char* CoffObjLd::strGet(void* name)
 {
-	if(name[0]) return strTab.add((char*)name, 8);
-	char* str = ovf_ofsp(pStrTab, name[1]);
+	if(RU(name)) return strTab.add((char*)name, 8);
+	char* str = ovf_ofsp(pStrTab, RU(name,4));
 	//printf("%X, %X, %X\n", name[1], str, fileData.end());
 	return str_check(str, (char*)fileData.end()) ? str : 0;
 }
@@ -119,6 +119,7 @@ int CoffObjLd::findSect(cch* name)
 	//	cstr name = sections[i].name(*this);
 	//	if(!name.cmp(name)) return i; }
 	//return -1;
+	return -1;
 }
 
 struct class_list_t { int  val; cch* str; };
