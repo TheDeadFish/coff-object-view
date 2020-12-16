@@ -116,7 +116,8 @@ void selectTab(HWND hwnd)
 	symbol_select(hwnd);
 }
 
-void mainDlgInit(HWND hwnd)
+void load_module_(HWND hwnd, cch* name);
+void mainDlgInit(HWND hwnd, cch* file)
 {
 	// get listView handles
 	hListSym = GetDlgItem(hwnd, IDC_LIST1);
@@ -138,6 +139,8 @@ void mainDlgInit(HWND hwnd)
 	lstView_initCol(hListSym, symLst);
 	lstView_initCol(hListSect, sectLst);
 	lstView_initCol(hListRel, relLst);
+	
+	if(file) load_module_(hwnd, file);
 }
 
 void load_module_(HWND hwnd, cch* name)
@@ -197,7 +200,7 @@ BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	  	  
 	  ,) 
 
-		ON_MESSAGE(WM_INITDIALOG, mainDlgInit(hwnd))
+		ON_MESSAGE(WM_INITDIALOG, mainDlgInit(hwnd, (cch*)lParam))
 		
 		CASE_NOTIFY(
 			ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, selectTab(hwnd))
@@ -209,9 +212,10 @@ BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	,)
 }
 
-int main()
+int main(int argc, char** argv)
 {
-	DialogBoxW(NULL, MAKEINTRESOURCEW(IDD_DIALOG1), NULL, mainDlgProc);
+	DialogBoxParamW(NULL, MAKEINTRESOURCEW(IDD_DIALOG1),
+		NULL, mainDlgProc, (LPARAM)argv[1]);
 }
 
 
