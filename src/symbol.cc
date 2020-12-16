@@ -1,5 +1,7 @@
 #include "coff-view.h"
 
+char* fmt_sect(CoffObjLd& obj, int iSect);
+
 void init_symbols(HWND hwnd)
 {
 	ListView_DeleteAllItems(hListSym);
@@ -17,7 +19,7 @@ void init_symbols(HWND hwnd)
 			Xstrfmt("%d,   %s", iSym, sym.name), iSym);
 		int i = lstView_iosText(hListSym, -1, sym.name);
 		lstView_iosText(hListSym, i, 1,
-			object.sect_name(sym.Section));
+			xstr(fmt_sect(object, sym.Section)));
 		lstView_fmt(hListSym, i, 2, "%s (%d)", object
 			.class_name(sym.StorageClass), sym.StorageClass);
 		lstView_setHex(hListSym, i, 3, sym.Value);

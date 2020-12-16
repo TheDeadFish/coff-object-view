@@ -17,12 +17,18 @@ u32 sectAlign(u32 flags) {
 	return align;
 }
 
+char* fmt_sect(CoffObjLd& obj, int iSect)
+{
+	cch* name = obj.sect_name(iSect);
+	return xstrfmt("%d,   %s", iSect, name);
+}
+
 void init_sections(HWND hwnd)
 {
 	OBJ_SECT_ITER(object, 
-		dlgCombo_addStr(hwnd, IDC_COMBO2, 
-			Xstrfmt("%d,   %s", iSect+1, sect.name()), iSect);
-		lstView_iosText(hListSect, iSect, sect.name());
+		xstr name = fmt_sect(object, iSect+1);
+		dlgCombo_addStr(hwnd, IDC_COMBO2, name, iSect);
+		lstView_iosText(hListSect, iSect, name);
 		lstView_setHex(hListSect, iSect, 1, sect.SizeOfRawData);
 		lstView_setHex(hListSect, iSect, 2, sect.VirtualAddress);
 		lstView_setHex(hListSect, iSect, 3, sect.Characteristics);
