@@ -193,6 +193,9 @@ BOOL CALLBACK mainDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			ON_CONTROL(CBN_SELCHANGE, IDC_COMBO1, symbol_select(hwnd))
 			ON_CONTROL(CBN_SELCHANGE, IDC_COMBO2, upd_relocs(hwnd))
 			
+			ON_COMMAND(IDC_FINDX, setDlgItemText(hwnd, IDC_FIND, ""))
+			ON_CONTROL(EN_CHANGE, IDC_FIND, init_symbols(hwnd))
+			
 			//ON_CONTROL_RANGE(EN_CHANGE, IDC_MOD_BASE, IDC_RVA_ADDR,
 			//	edt_update(hwnd, LOWORD(wParam)))
 			//ON_CONTROL_RANGE(EN_KILLFOCUS, IDC_MOD_BASE, IDC_RVA_ADDR,

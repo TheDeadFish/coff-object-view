@@ -13,3 +13,5 @@
 #define IDC_LIST1                               1007
 #define IDC_LIST3                               1008
 #define IDC_INFO                                1010
+#define IDC_FIND                                1011
+#define IDC_FINDX                               1013

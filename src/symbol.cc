@@ -1,18 +1,24 @@
 #include "coff-view.h"
 
+char* stristr( const char* str1, const char* str2 );
 char* fmt_sect(CoffObjLd& obj, int iSect);
 
 void init_symbols(HWND hwnd)
 {
+	SendMessage(hListSym, WM_SETREDRAW, FALSE, 0);
+
 	ListView_DeleteAllItems(hListSym);
 	dlgCombo_reset(hwnd, IDC_COMBO1);
 	
 	
 	int sectSymb = IsDlgButtonChecked(hwnd, IDC_SECT_SYM) ?
 		dlgCombo_getSel(hwnd, IDC_COMBO2)+1 : 0;
+		
+	xstr find = getDlgItemText(hwnd, IDC_FIND);
 	
 	OBJ_SYM_ITER(object, 	
 		if(sectSymb && sectSymb != sym.Section) continue;
+		if(find && !stristr(sym.name, find)) continue;
 		
 		// set the symbol name
 		dlgCombo_addStr(hwnd, IDC_COMBO1, 
@@ -31,6 +37,8 @@ void init_symbols(HWND hwnd)
 		if(i != 3) lstView_autoSize(hListSym, i); }
 		
 	dlgCombo_setSel(hwnd, IDC_COMBO1, 0);
+	
+	SendMessage(hListSym, WM_SETREDRAW, TRUE, 0);
 }
 
 void symbol_select(HWND hwnd)
